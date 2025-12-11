@@ -1032,6 +1032,43 @@ article.category-has-unread {
     color: #555;
 }
 
+.entry-ai-summary {
+    margin: 15px 0;
+    padding: 15px;
+    background-color: var(--entry-ai-summary-background, #f8f9fa);
+    border: 1px solid var(--entry-ai-summary-border-color, #dee2e6);
+    border-radius: 8px;
+    border-left: 4px solid var(--entry-ai-summary-accent-color, #6c5ce7);
+}
+
+.ai-summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    color: var(--entry-ai-summary-title-color, #495057);
+}
+
+.ai-summary-header button {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: var(--entry-ai-summary-close-color, #6c757d);
+    padding: 0 5px;
+    line-height: 1;
+}
+
+.ai-summary-header button:hover {
+    color: var(--entry-ai-summary-close-hover-color, #343a40);
+}
+
+.ai-summary-content {
+    color: var(--entry-ai-summary-content-color, #212529);
+    line-height: 1.6;
+    font-size: 1.1em;
+}
+
 .entry-content {
     padding-top: 15px;
     font-size: 1.2em;

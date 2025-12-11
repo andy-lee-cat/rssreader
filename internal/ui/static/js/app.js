@@ -1268,6 +1268,180 @@ function initializeClickHandlers() {
     }, true);
 }
 
+/**
+ * AI Summary Module
+ * This module handles the AI summary functionality with typewriter effect.
+ * The fetchAiSummary function can be replaced with real AI service integration.
+ */
+const AiSummary = (function() {
+    let isTyping = false;
+    let typingAbortController = null;
+
+    /**
+     * Fetch AI summary for the given content.
+     * This is a mock implementation that returns the first 100 characters.
+     * Replace this function to integrate with a real AI service.
+     *
+     * @param {string} content - The content to summarize.
+     * @returns {Promise<string>} The summary text.
+     */
+    async function fetchAiSummary(content) {
+        // TODO: Replace with real AI service API call
+        // Example:
+        // const response = await fetch('/api/ai/summary', {
+        //     method: 'POST',
+        //     headers: { 'Content-Type': 'application/json' },
+        //     body: JSON.stringify({ content: content })
+        // });
+        // const data = await response.json();
+        // return data.summary;
+
+        // Mock implementation: return first 100 characters
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                const summary = content.substring(0, 100) + (content.length > 100 ? "..." : "");
+                resolve(summary);
+            }, 100); // Small delay to simulate network request
+        });
+    }
+
+    /**
+     * Display text with typewriter effect.
+     *
+     * @param {Element} element - The element to display text in.
+     * @param {string} text - The text to display.
+     * @param {number} delay - Delay between each character in milliseconds.
+     * @param {AbortSignal} signal - Abort signal to cancel the animation.
+     * @returns {Promise<void>}
+     */
+    async function typewriterEffect(element, text, delay = 50, signal = null) {
+        element.textContent = "";
+
+        for (let i = 0; i < text.length; i++) {
+            if (signal && signal.aborted) {
+                return;
+            }
+
+            element.textContent += text[i];
+
+            await new Promise((resolve, reject) => {
+                const timeoutId = setTimeout(resolve, delay);
+
+                if (signal) {
+                    signal.addEventListener("abort", () => {
+                        clearTimeout(timeoutId);
+                        reject(new DOMException("Aborted", "AbortError"));
+                    }, { once: true });
+                }
+            }).catch(() => {
+                // Aborted, just return
+                return;
+            });
+        }
+    }
+
+    /**
+     * Stop the current typewriter animation.
+     */
+    function stopTyping() {
+        if (typingAbortController) {
+            typingAbortController.abort();
+            typingAbortController = null;
+        }
+        isTyping = false;
+    }
+
+    /**
+     * Handle AI summary button click.
+     */
+    async function handleSummaryAction() {
+        const buttonElement = document.querySelector(":is(a, button)[data-ai-summary]");
+        if (!buttonElement) return;
+
+        const summaryContainer = document.getElementById("ai-summary-container");
+        const summaryContent = document.getElementById("ai-summary-content");
+        if (!summaryContainer || !summaryContent) return;
+
+        // If already visible, hide it and stop typing
+        if (summaryContainer.style.display !== "none") {
+            stopTyping();
+            summaryContainer.style.display = "none";
+            return;
+        }
+
+        // If already typing, don't start again
+        if (isTyping) return;
+
+        const originalButtonElement = setButtonToLoadingState(buttonElement);
+
+        // Get entry content text
+        const entryContent = document.querySelector(".entry-content");
+        if (!entryContent) {
+            restoreButtonState(buttonElement, originalButtonElement);
+            return;
+        }
+
+        const textContent = entryContent.innerText || entryContent.textContent;
+
+        // Show container and clear content
+        summaryContent.textContent = "";
+        summaryContainer.style.display = "block";
+
+        try {
+            // Fetch summary (can be replaced with real AI service)
+            const summary = await fetchAiSummary(textContent);
+
+            restoreButtonState(buttonElement, originalButtonElement);
+
+            // Start typewriter effect
+            isTyping = true;
+            typingAbortController = new AbortController();
+
+            await typewriterEffect(summaryContent, summary, 50, typingAbortController.signal);
+        } catch (error) {
+            console.error("AI Summary error:", error);
+            summaryContent.textContent = "Failed to generate summary.";
+            restoreButtonState(buttonElement, originalButtonElement);
+        } finally {
+            isTyping = false;
+            typingAbortController = null;
+        }
+    }
+
+    /**
+     * Handle AI summary close button click.
+     */
+    function handleCloseAction() {
+        stopTyping();
+        const summaryContainer = document.getElementById("ai-summary-container");
+        if (summaryContainer) {
+            summaryContainer.style.display = "none";
+        }
+    }
+
+    /**
+     * Initialize AI summary handlers.
+     */
+    function init() {
+        onClick(":is(a, button)[data-ai-summary]", handleSummaryAction);
+        onClick(":is(a, button)[data-ai-summary-close]", handleCloseAction);
+    }
+
+    // Public API
+    return {
+        init: init,
+        fetchAiSummary: fetchAiSummary,  // Exposed for potential external override
+        stopTyping: stopTyping
+    };
+})();
+
+/**
+ * Initialize AI summary handlers.
+ */
+function initializeAiSummaryHandlers() {
+    AiSummary.init();
+}
+
 // Initialize application handlers
 initializeMainMenuHandlers();
 initializeFormHandlers();
@@ -1276,6 +1450,7 @@ initializeWebAuthn();
 initializeKeyboardShortcuts();
 initializeTouchHandler();
 initializeClickHandlers();
+initializeAiSummaryHandlers();
 initializeServiceWorker();
 
 // Reload the page if it was restored from the back-forward cache and mark entries as read is enabled.

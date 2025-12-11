@@ -96,6 +96,14 @@
     --entry-content-aside-border-color: #777;
     --entry-enclosure-border-color: #333;
 
+    --entry-ai-summary-background: #2d2d2d;
+    --entry-ai-summary-border-color: #444;
+    --entry-ai-summary-accent-color: #a29bfe;
+    --entry-ai-summary-title-color: #bbb;
+    --entry-ai-summary-content-color: #999;
+    --entry-ai-summary-close-color: #888;
+    --entry-ai-summary-close-hover-color: #ccc;
+
     --parsing-error-color: #eee;
     --feed-parsing-error-background-color: #3a1515;
     --feed-parsing-error-border-style: solid;
