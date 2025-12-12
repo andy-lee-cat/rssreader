@@ -1033,6 +1033,7 @@ article.category-has-unread {
 }
 
 .entry-ai-summary {
+    display: none;
     margin: 15px 0;
     padding: 15px;
     background-color: var(--entry-ai-summary-background, #f8f9fa);

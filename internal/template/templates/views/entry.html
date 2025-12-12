@@ -130,6 +130,7 @@
                         class="page-button"
                         title="{{ t "entry.ai_summary.title" }}"
                         data-ai-summary="true"
+                        data-ai-summary-url="{{ route "aiSummary" "entryID" .entry.ID }}"
                         data-label-loading="{{ t "entry.state.loading" }}"
                         >{{ icon "sparkle" }}<span class="icon-label">{{ t "entry.ai_summary.label" }}</span></button>
                 </li>

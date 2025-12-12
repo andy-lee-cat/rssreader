@@ -97,6 +97,24 @@ func (s *Storage) UpdateEntryTitleAndContent(entry *model.Entry) error {
 	return nil
 }
 
+// UpdateEntryAISummary updates entry AI summary.
+func (s *Storage) UpdateEntryAISummary(userID, entryID int64, aiSummary string) error {
+	query := `
+		UPDATE
+			entries
+		SET
+			ai_summary=$1
+		WHERE
+			id=$2 AND user_id=$3
+	`
+
+	if _, err := s.db.Exec(query, aiSummary, entryID, userID); err != nil {
+		return fmt.Errorf(`store: unable to update entry AI summary #%d: %v`, entryID, err)
+	}
+
+	return nil
+}
+
 // createEntry add a new entry.
 func (s *Storage) createEntry(tx *sql.Tx, entry *model.Entry) error {
 	truncatedTitle, truncatedContent := truncateTitleAndContentForTSVectorField(entry.Title, entry.Content)

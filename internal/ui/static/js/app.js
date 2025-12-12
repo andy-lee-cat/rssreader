@@ -1270,91 +1270,38 @@ function initializeClickHandlers() {
 
 /**
  * AI Summary Module
- * This module handles the AI summary functionality with typewriter effect.
- * The fetchAiSummary function can be replaced with real AI service integration.
+ * This module handles the AI summary functionality with SSE streaming.
+ * It fetches summaries from the backend API which supports Server-Sent Events.
  */
 const AiSummary = (function() {
-    let isTyping = false;
-    let typingAbortController = null;
+    let isStreaming = false;
+    let eventSource = null;
+    let savedButtonElement = null;
+    let savedOriginalButtonElement = null;
 
     /**
-     * Fetch AI summary for the given content.
-     * This is a mock implementation that returns the first 100 characters.
-     * Replace this function to integrate with a real AI service.
-     *
-     * @param {string} content - The content to summarize.
-     * @returns {Promise<string>} The summary text.
+     * Stop the current streaming and restore button state.
      */
-    async function fetchAiSummary(content) {
-        // TODO: Replace with real AI service API call
-        // Example:
-        // const response = await fetch('/api/ai/summary', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({ content: content })
-        // });
-        // const data = await response.json();
-        // return data.summary;
-
-        // Mock implementation: return first 100 characters
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                const summary = content.substring(0, 100) + (content.length > 100 ? "..." : "");
-                resolve(summary);
-            }, 100); // Small delay to simulate network request
-        });
-    }
-
-    /**
-     * Display text with typewriter effect.
-     *
-     * @param {Element} element - The element to display text in.
-     * @param {string} text - The text to display.
-     * @param {number} delay - Delay between each character in milliseconds.
-     * @param {AbortSignal} signal - Abort signal to cancel the animation.
-     * @returns {Promise<void>}
-     */
-    async function typewriterEffect(element, text, delay = 50, signal = null) {
-        element.textContent = "";
-
-        for (let i = 0; i < text.length; i++) {
-            if (signal && signal.aborted) {
-                return;
-            }
-
-            element.textContent += text[i];
-
-            await new Promise((resolve, reject) => {
-                const timeoutId = setTimeout(resolve, delay);
-
-                if (signal) {
-                    signal.addEventListener("abort", () => {
-                        clearTimeout(timeoutId);
-                        reject(new DOMException("Aborted", "AbortError"));
-                    }, { once: true });
-                }
-            }).catch(() => {
-                // Aborted, just return
-                return;
-            });
+    function stopStreaming() {
+        if (eventSource) {
+            eventSource.close();
+            eventSource = null;
         }
-    }
+        isStreaming = false;
 
-    /**
-     * Stop the current typewriter animation.
-     */
-    function stopTyping() {
-        if (typingAbortController) {
-            typingAbortController.abort();
-            typingAbortController = null;
+        // Restore button state if we have saved references
+        if (savedButtonElement && savedOriginalButtonElement) {
+            restoreButtonState(savedButtonElement, savedOriginalButtonElement);
+            savedButtonElement = null;
+            savedOriginalButtonElement = null;
         }
-        isTyping = false;
     }
 
     /**
      * Handle AI summary button click.
+     * Fetches summary via SSE from the backend API.
      */
-    async function handleSummaryAction() {
+    function handleSummaryAction() {
         const buttonElement = document.querySelector(":is(a, button)[data-ai-summary]");
         if (!buttonElement) return;
 
@@ -1362,57 +1309,69 @@ const AiSummary = (function() {
         const summaryContent = document.getElementById("ai-summary-content");
         if (!summaryContainer || !summaryContent) return;
 
-        // If already visible, hide it and stop typing
-        if (summaryContainer.style.display !== "none") {
-            stopTyping();
+        // If already visible, hide it and stop streaming
+        const isVisible = window.getComputedStyle(summaryContainer).display !== "none";
+        if (isVisible) {
+            stopStreaming();
             summaryContainer.style.display = "none";
             return;
         }
 
-        // If already typing, don't start again
-        if (isTyping) return;
+        // If already streaming, don't start again
+        if (isStreaming) return;
 
-        const originalButtonElement = setButtonToLoadingState(buttonElement);
-
-        // Get entry content text
-        const entryContent = document.querySelector(".entry-content");
-        if (!entryContent) {
-            restoreButtonState(buttonElement, originalButtonElement);
+        // Get the API URL from the button's data attribute
+        const apiUrl = buttonElement.dataset.aiSummaryUrl;
+        if (!apiUrl) {
+            console.error("AI Summary: No API URL found");
             return;
         }
 
-        const textContent = entryContent.innerText || entryContent.textContent;
+        // Save button references for later restoration
+        savedButtonElement = buttonElement;
+        savedOriginalButtonElement = setButtonToLoadingState(buttonElement);
 
         // Show container and clear content
         summaryContent.textContent = "";
         summaryContainer.style.display = "block";
+        isStreaming = true;
 
-        try {
-            // Fetch summary (can be replaced with real AI service)
-            const summary = await fetchAiSummary(textContent);
+        // Create EventSource for SSE
+        eventSource = new EventSource(apiUrl);
 
-            restoreButtonState(buttonElement, originalButtonElement);
+        eventSource.onmessage = function(event) {
+            // Append each chunk to the summary content
+            summaryContent.textContent += event.data;
+        };
 
-            // Start typewriter effect
-            isTyping = true;
-            typingAbortController = new AbortController();
+        eventSource.addEventListener("done", function() {
+            // Streaming complete
+            stopStreaming();
+        });
 
-            await typewriterEffect(summaryContent, summary, 50, typingAbortController.signal);
-        } catch (error) {
-            console.error("AI Summary error:", error);
-            summaryContent.textContent = "Failed to generate summary.";
-            restoreButtonState(buttonElement, originalButtonElement);
-        } finally {
-            isTyping = false;
-            typingAbortController = null;
-        }
+        eventSource.addEventListener("error", function(event) {
+            // Handle error event from server
+            if (event.data) {
+                summaryContent.textContent = "Error: " + event.data;
+            }
+            stopStreaming();
+        });
+
+        eventSource.onerror = function(error) {
+            // Connection error
+            console.error("AI Summary SSE error:", error);
+            if (summaryContent.textContent === "") {
+                summaryContent.textContent = "Failed to generate summary.";
+            }
+            stopStreaming();
+        };
     }
 
     /**
      * Handle AI summary close button click.
      */
     function handleCloseAction() {
-        stopTyping();
+        stopStreaming();
         const summaryContainer = document.getElementById("ai-summary-container");
         if (summaryContainer) {
             summaryContainer.style.display = "none";
@@ -1430,8 +1389,7 @@ const AiSummary = (function() {
     // Public API
     return {
         init: init,
-        fetchAiSummary: fetchAiSummary,  // Exposed for potential external override
-        stopTyping: stopTyping
+        stopStreaming: stopStreaming
     };
 })();
 
