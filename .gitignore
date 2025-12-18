@@ -8,3 +8,4 @@ miniflux-*
 doc/dev
 learning/
 .python-version
+*.pyc
