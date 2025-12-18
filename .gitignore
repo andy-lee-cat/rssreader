@@ -5,6 +5,9 @@
 *.deb
 *.rpm
 miniflux-*
+.env
+
+# Personal documents
 doc/dev
 learning/
 
@@ -12,4 +15,5 @@ learning/
 __pycache__/
 *.py[codz]
 *$py.class
+*.pckl
 .python-version
