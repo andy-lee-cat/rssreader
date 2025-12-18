@@ -7,5 +7,9 @@
 miniflux-*
 doc/dev
 learning/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[codz]
+*$py.class
 .python-version
-*.pyc
