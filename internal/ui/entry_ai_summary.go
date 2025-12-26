@@ -64,9 +64,9 @@ func (h *handler) streamAISummary(w http.ResponseWriter, r *http.Request) {
 		textContent = entry.Title
 	}
 
-	// Generate summary
+	// Generate summary (pass userID for AI service to look up user's API key)
 	ctx := r.Context()
-	ch, err := provider.GenerateSummary(ctx, textContent)
+	ch, err := provider.GenerateSummary(ctx, userID, textContent)
 	if err != nil {
 		sendSSEError(w, flusher, err.Error())
 		return

@@ -30,7 +30,8 @@ func (m *MockProvider) Name() string {
 
 // GenerateSummary generates a mock summary by returning the first 100 characters.
 // It streams the result character by character to simulate AI generation.
-func (m *MockProvider) GenerateSummary(ctx context.Context, content string) (<-chan string, error) {
+// userID is ignored in mock implementation.
+func (m *MockProvider) GenerateSummary(ctx context.Context, userID int64, content string) (<-chan string, error) {
 	ch := make(chan string)
 
 	go func() {

@@ -35,7 +35,9 @@ export PGPASSWORD := postgres
 	docker-images \
 	rpm \
 	debian \
-	debian-packages
+	debian-packages \
+	docker-prod \
+	docker-prod-down
 
 miniflux:
 	@ go build -buildmode=pie -ldflags=$(LD_FLAGS) -o $(APP)
@@ -162,3 +164,10 @@ debian-packages: clean
 	$(MAKE) debian DOCKER_PLATFORM=amd64
 	$(MAKE) debian DOCKER_PLATFORM=arm64
 	$(MAKE) debian DOCKER_PLATFORM=arm/v7
+
+# Docker Compose commands for production
+docker-prod:
+	docker compose -f docker-compose.prod.yml up -d --build
+
+docker-prod-down:
+	docker compose -f docker-compose.prod.yml down

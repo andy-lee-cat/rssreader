@@ -1,0 +1,59 @@
+# Production Docker Compose
+# 未来再确认这个的正确性，先进行开发
+# Usage: docker compose -f docker-compose.prod.yml up -d --build
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: rssreader-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-miniflux2}
+    volumes:
+      - rssreader-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+  # Miniflux RSS Reader (Go)
+  miniflux:
+    build:
+      context: .
+      dockerfile: packaging/docker/alpine/Dockerfile
+    container_name: rssreader-miniflux
+    ports:
+      - "${MINIFLUX_PORT:-8080}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=user=${POSTGRES_USER:-postgres} password=${POSTGRES_PASSWORD:-postgres} dbname=${POSTGRES_DB:-miniflux2} host=db sslmode=disable
+      - RUN_MIGRATIONS=1
+      - CREATE_ADMIN=${CREATE_ADMIN:-0}
+      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-}
+      - AI_SERVICE_URL=http://ai-agent:5000
+    restart: always
+
+  # AI Agent Service (Python/Flask)
+  ai-agent:
+    build:
+      context: ./ai
+      dockerfile: Dockerfile
+    container_name: rssreader-ai
+    ports:
+      - "${AI_SERVICE_PORT:-5000}:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=user=${POSTGRES_USER:-postgres} password=${POSTGRES_PASSWORD:-postgres} dbname=${POSTGRES_DB:-miniflux2} host=db sslmode=disable
+    restart: always
+
+volumes:
+  rssreader-db:

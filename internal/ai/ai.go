@@ -11,10 +11,11 @@ import (
 // Implementations can be mock, OpenAI, Claude, or any other AI service.
 type SummaryProvider interface {
 	// GenerateSummary generates a summary for the given content.
+	// userID is used to look up the user's AI configuration (API key, model, etc.)
 	// It returns a channel that streams the summary text chunk by chunk.
 	// The channel is closed when the summary is complete or an error occurs.
 	// If an error occurs, it will be sent as the last message prefixed with "error:".
-	GenerateSummary(ctx context.Context, content string) (<-chan string, error)
+	GenerateSummary(ctx context.Context, userID int64, content string) (<-chan string, error)
 
 	// Name returns the name of the provider for logging purposes.
 	Name() string
