@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright The Miniflux Authors. All rights reserved.
+// SPDX-FileCopyrightText: Copyright Andy. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 package ai // import "miniflux.app/v2/internal/ai"
@@ -15,18 +15,18 @@ import (
 	"time"
 )
 
-// LangGraphProvider calls the Python LangGraph AI service.
-type LangGraphProvider struct {
+// LangGraphAIServer calls the Python LangGraph AI service.
+type LangGraphAIServer struct {
 	baseURL    string
 	httpClient *http.Client
 }
 
-// NewLangGraphProvider creates a new LangGraphProvider.
-func NewLangGraphProvider(baseURL string) *LangGraphProvider {
+// NewLangGraphAIServer creates a new LangGraphAIServer.
+func NewLangGraphAIServer(baseURL string) *LangGraphAIServer {
 	if baseURL == "" {
 		baseURL = "http://localhost:5000"
 	}
-	return &LangGraphProvider{
+	return &LangGraphAIServer{
 		baseURL: baseURL,
 		httpClient: &http.Client{
 			Timeout: 5 * time.Minute, // Long timeout for streaming
@@ -35,12 +35,12 @@ func NewLangGraphProvider(baseURL string) *LangGraphProvider {
 }
 
 // Name returns the provider name.
-func (p *LangGraphProvider) Name() string {
+func (p *LangGraphAIServer) Name() string {
 	return "langgraph"
 }
 
 // GenerateSummary calls the Python AI service to generate a summary.
-func (p *LangGraphProvider) GenerateSummary(ctx context.Context, userID int64, content string) (<-chan string, error) {
+func (p *LangGraphAIServer) GenerateSummary(ctx context.Context, userID int64, content string) (<-chan string, error) {
 	ch := make(chan string)
 
 	go func() {

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright The Miniflux Authors. All rights reserved.
+// SPDX-FileCopyrightText: Copyright Andy. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 package ui // import "miniflux.app/v2/internal/ui"
@@ -56,7 +56,7 @@ func (h *handler) streamAISummary(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Generate new summary using AI provider
-	provider := ai.GetDefaultProvider()
+	aiServer := ai.GetAIServer()
 
 	// Extract text content from HTML
 	textContent := extractTextFromHTML(entry.Content)
@@ -66,46 +66,40 @@ func (h *handler) streamAISummary(w http.ResponseWriter, r *http.Request) {
 
 	// Generate summary (pass userID for AI service to look up user's API key)
 	ctx := r.Context()
-	ch, err := provider.GenerateSummary(ctx, userID, textContent)
+	ch, err := aiServer.GenerateSummary(ctx, userID, textContent)
 	if err != nil {
 		sendSSEError(w, flusher, err.Error())
 		return
 	}
 
-	// Collect the full summary while streaming
 	var summaryBuilder strings.Builder
-
 	for chunk := range ch {
 		summaryBuilder.WriteString(chunk)
-
-		// Send chunk to client
-		fmt.Fprintf(w, "data: %s\n\n", chunk)
-		flusher.Flush()
+		sendSSEData(w, flusher, chunk)
 	}
 
 	// Save the complete summary to database
 	fullSummary := summaryBuilder.String()
 	if fullSummary != "" && !strings.HasPrefix(fullSummary, "error:") {
 		if err := h.store.UpdateEntryAISummary(userID, entryID, fullSummary); err != nil {
-			// Log error but don't fail the response
 			fmt.Printf("Failed to save AI summary: %v\n", err)
 		}
 	}
 
-	// Send done event
-	fmt.Fprintf(w, "event: done\ndata: complete\n\n")
-	flusher.Flush()
+	sendDone(w, flusher)
 }
 
 // streamExistingSummary streams an existing summary character by character.
 func streamExistingSummary(w http.ResponseWriter, flusher http.Flusher, summary string) {
 	for _, r := range summary {
-		fmt.Fprintf(w, "data: %s\n\n", string(r))
-		flusher.Flush()
+		sendSSEData(w, flusher, string(r))
 	}
+	sendDone(w, flusher)
+}
 
-	// Send done event
-	fmt.Fprintf(w, "event: done\ndata: complete\n\n")
+// sendSSEData sends data via SSE.
+func sendSSEData(w http.ResponseWriter, flusher http.Flusher, data string) {
+	fmt.Fprintf(w, "data: %s\n\n", data)
 	flusher.Flush()
 }
 
@@ -115,8 +109,14 @@ func sendSSEError(w http.ResponseWriter, flusher http.Flusher, errMsg string) {
 	flusher.Flush()
 }
 
+// sendDone sends a done event via SSE.
+func sendDone(w http.ResponseWriter, flusher http.Flusher) {
+	fmt.Fprintf(w, "event: done\ndata: complete\n\n")
+	flusher.Flush()
+}
+
 // extractTextFromHTML extracts plain text from HTML content.
-// This is a simple implementation; you may want to use a proper HTML parser.
+// TODO(Andy): This is a simple implementation; you may want to use a proper HTML parser.
 func extractTextFromHTML(htmlContent string) string {
 	// Simple approach: remove HTML tags
 	// For production, consider using golang.org/x/net/html or similar
