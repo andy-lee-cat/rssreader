@@ -647,5 +647,8 @@
     ],
     "time_elapsed.yesterday": "ieri",
     "tooltip.keyboard_shortcuts": "Scurtături Tastatură: %s",
-    "tooltip.logged_user": "Atentificat ca %s"
+    "tooltip.logged_user": "Atentificat ca %s",
+    "entry.ai_summary.label": "AI Summary",
+    "entry.ai_summary.title": "AI Summary",
+    "entry.ai_summary.close": "Close"
 }

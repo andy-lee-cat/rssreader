@@ -629,5 +629,8 @@
     ],
     "time_elapsed.yesterday": "eilen",
     "tooltip.keyboard_shortcuts": "Pikanäppäin: %s",
-    "tooltip.logged_user": "Kirjautunut %s-käyttäjänä"
+    "tooltip.logged_user": "Kirjautunut %s-käyttäjänä",
+    "entry.ai_summary.label": "AI Summary",
+    "entry.ai_summary.title": "AI Summary",
+    "entry.ai_summary.close": "Close"
 }

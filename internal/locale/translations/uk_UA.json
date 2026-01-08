@@ -647,5 +647,8 @@
     ],
     "time_elapsed.yesterday": "вчора",
     "tooltip.keyboard_shortcuts": "Комбінація клавіш: %s",
-    "tooltip.logged_user": "Здійснено вхід як %s"
+    "tooltip.logged_user": "Здійснено вхід як %s",
+    "entry.ai_summary.label": "AI Summary",
+    "entry.ai_summary.title": "AI Summary",
+    "entry.ai_summary.close": "Close"
 }

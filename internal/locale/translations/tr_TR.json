@@ -629,5 +629,8 @@
     ],
     "time_elapsed.yesterday": "dün",
     "tooltip.keyboard_shortcuts": "Klavye Kısayolu: %s",
-    "tooltip.logged_user": "%s olarak giriş yapıldı"
+    "tooltip.logged_user": "%s olarak giriş yapıldı",
+    "entry.ai_summary.label": "AI Summary",
+    "entry.ai_summary.title": "AI Summary",
+    "entry.ai_summary.close": "Close"
 }

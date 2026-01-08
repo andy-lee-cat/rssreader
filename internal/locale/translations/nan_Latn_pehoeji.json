@@ -611,5 +611,8 @@
     ],
     "time_elapsed.yesterday": "cha-hng",
     "tooltip.keyboard_shortcuts": "Khoài-sok khí：%s",
-    "tooltip.logged_user": "Chit-má teng-lo̍k--ê:  %s"
+    "tooltip.logged_user": "Chit-má teng-lo̍k--ê:  %s",
+    "entry.ai_summary.label": "AI Summary",
+    "entry.ai_summary.title": "AI Summary",
+    "entry.ai_summary.close": "Close"
 }

@@ -629,5 +629,8 @@
     ],
     "time_elapsed.yesterday": "ontem",
     "tooltip.keyboard_shortcuts": "Atalho do teclado: %s",
-    "tooltip.logged_user": "Autenticado como %s"
+    "tooltip.logged_user": "Autenticado como %s",
+    "entry.ai_summary.label": "AI Summary",
+    "entry.ai_summary.title": "AI Summary",
+    "entry.ai_summary.close": "Close"
 }

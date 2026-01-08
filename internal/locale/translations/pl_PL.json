@@ -647,5 +647,8 @@
     ],
     "time_elapsed.yesterday": "wczoraj",
     "tooltip.keyboard_shortcuts": "Skróty klawiszowe: %s",
-    "tooltip.logged_user": "Zalogowany jako %s"
+    "tooltip.logged_user": "Zalogowany jako %s",
+    "entry.ai_summary.label": "AI Summary",
+    "entry.ai_summary.title": "AI Summary",
+    "entry.ai_summary.close": "Close"
 }

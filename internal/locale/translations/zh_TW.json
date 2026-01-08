@@ -611,5 +611,8 @@
     ],
     "time_elapsed.yesterday": "昨天",
     "tooltip.keyboard_shortcuts": "快捷鍵：%s",
-    "tooltip.logged_user": "目前登入 %s"
+    "tooltip.logged_user": "目前登入 %s",
+    "entry.ai_summary.label": "AI Summary",
+    "entry.ai_summary.title": "AI Summary",
+    "entry.ai_summary.close": "Close"
 }

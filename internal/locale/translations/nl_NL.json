@@ -629,5 +629,8 @@
     ],
     "time_elapsed.yesterday": "gisteren",
     "tooltip.keyboard_shortcuts": "Sneltoets: %s",
-    "tooltip.logged_user": "Ingelogd als %s"
+    "tooltip.logged_user": "Ingelogd als %s",
+    "entry.ai_summary.label": "AI Summary",
+    "entry.ai_summary.title": "AI Summary",
+    "entry.ai_summary.close": "Close"
 }

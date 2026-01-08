@@ -611,5 +611,8 @@
     ],
     "time_elapsed.yesterday": "kemarin",
     "tooltip.keyboard_shortcuts": "Pintasan Papan Tik: %s",
-    "tooltip.logged_user": "Masuk sebagai %s"
+    "tooltip.logged_user": "Masuk sebagai %s",
+    "entry.ai_summary.label": "AI Summary",
+    "entry.ai_summary.title": "AI Summary",
+    "entry.ai_summary.close": "Close"
 }

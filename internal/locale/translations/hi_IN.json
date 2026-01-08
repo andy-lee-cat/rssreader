@@ -629,5 +629,8 @@
     ],
     "time_elapsed.yesterday": "कल",
     "tooltip.keyboard_shortcuts": "कुंजीपटल शॉर्टकट: %s",
-    "tooltip.logged_user": "%s के रूप में लॉग इन किया"
+    "tooltip.logged_user": "%s के रूप में लॉग इन किया",
+    "entry.ai_summary.label": "AI Summary",
+    "entry.ai_summary.title": "AI Summary",
+    "entry.ai_summary.close": "Close"
 }

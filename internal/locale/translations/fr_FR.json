@@ -629,5 +629,8 @@
     ],
     "time_elapsed.yesterday": "hier",
     "tooltip.keyboard_shortcuts": "Raccourci clavier : %s",
-    "tooltip.logged_user": "Connecté en tant que %s"
+    "tooltip.logged_user": "Connecté en tant que %s",
+    "entry.ai_summary.label": "AI Summary",
+    "entry.ai_summary.title": "AI Summary",
+    "entry.ai_summary.close": "Close"
 }

@@ -647,5 +647,8 @@
     ],
     "time_elapsed.yesterday": "вчера",
     "tooltip.keyboard_shortcuts": "Сочетания клавиш: %s",
-    "tooltip.logged_user": "Авторизован как %s"
+    "tooltip.logged_user": "Авторизован как %s",
+    "entry.ai_summary.label": "AI Summary",
+    "entry.ai_summary.title": "AI Summary",
+    "entry.ai_summary.close": "Close"
 }

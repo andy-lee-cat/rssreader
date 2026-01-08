@@ -629,5 +629,8 @@
     ],
     "time_elapsed.yesterday": "ayer",
     "tooltip.keyboard_shortcuts": "Atajo de teclado: %s",
-    "tooltip.logged_user": "Registrado como %s"
+    "tooltip.logged_user": "Registrado como %s",
+    "entry.ai_summary.label": "AI Summary",
+    "entry.ai_summary.title": "AI Summary",
+    "entry.ai_summary.close": "Close"
 }

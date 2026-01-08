@@ -629,5 +629,8 @@
     ],
     "time_elapsed.yesterday": "χθες",
     "tooltip.keyboard_shortcuts": "Συντόμευση πληκτρολογίου: % s",
-    "tooltip.logged_user": "Συνδεδεμένος/η ως %s"
+    "tooltip.logged_user": "Συνδεδεμένος/η ως %s",
+    "entry.ai_summary.label": "AI Summary",
+    "entry.ai_summary.title": "AI Summary",
+    "entry.ai_summary.close": "Close"
 }
