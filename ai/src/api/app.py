@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 from flask import Flask, jsonify
 from flask_cors import CORS
 
-from src.api.routes.summary import summary_bp
+from src.api.routes.summary import langgraph_bp
 from src.api.routes.config import config_bp
 from src.database import init_db, close_db
 
@@ -37,7 +37,7 @@ def create_app():
     })
 
     # 注册蓝图
-    app.register_blueprint(summary_bp)
+    app.register_blueprint(langgraph_bp)
     app.register_blueprint(config_bp)
 
     # 健康检查端点

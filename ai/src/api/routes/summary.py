@@ -8,10 +8,10 @@ import json
 from src.agent.summary.workflow import create_summary_workflow
 from src.config.user_model import user_model_store
 
-summary_bp = Blueprint("summary", __name__, url_prefix="/api/summary")
+langgraph_bp = Blueprint("summary", __name__, url_prefix="/api")
 
 
-@summary_bp.route("/generate", methods=["POST"])
+@langgraph_bp.route("/summary", methods=["POST"])
 def generate_summary():
     """
     生成 RSS 文章摘要
@@ -108,12 +108,7 @@ def _stream_summary(workflow, content: str):
                 # SSE 格式：data: JSON\n\n
                 chunk_data = json.dumps({"chunk": message_chunk.content}, ensure_ascii=False)
                 yield f"data: {chunk_data}\n\n"
-
-        # 发送完成事件
         yield "event: done\n"
-        yield f"data: {json.dumps({'success': True})}\n\n"
 
     except Exception as e:
-        error_data = json.dumps({"success": False, "error": str(e)}, ensure_ascii=False)
         yield f"event: error\n"
-        yield f"data: {error_data}\n\n"

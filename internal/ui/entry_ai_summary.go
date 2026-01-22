@@ -4,6 +4,7 @@
 package ui // import "miniflux.app/v2/internal/ui"
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -56,7 +57,7 @@ func (h *handler) streamAISummary(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Generate new summary using AI provider
-	aiServer := ai.GetAIServer()
+	AIClient := ai.GetAIClient()
 
 	// Extract text content from HTML
 	textContent := extractTextFromHTML(entry.Content)
@@ -66,16 +67,31 @@ func (h *handler) streamAISummary(w http.ResponseWriter, r *http.Request) {
 
 	// Generate summary (pass userID for AI service to look up user's API key)
 	ctx := r.Context()
-	ch, err := aiServer.GenerateSummary(ctx, userID, textContent)
+	ch, err := AIClient.GenerateSummary(ctx, userID, textContent)
 	if err != nil {
 		sendSSEError(w, flusher, err.Error())
 		return
 	}
 
 	var summaryBuilder strings.Builder
-	for chunk := range ch {
-		summaryBuilder.WriteString(chunk)
-		sendSSEData(w, flusher, chunk)
+	for line := range ch {
+		var chunkData ai.ChunkData
+		// 检查是否是一个event
+		if after, ok := strings.CutPrefix(line, "event: "); ok {
+			event := strings.TrimSpace(after)
+			if event == "error" {
+				sendSSEError(w, flusher, "AI server disconnected")
+			}
+			continue
+		}
+
+		data := strings.TrimSpace(strings.TrimPrefix(line, "data: "))
+		if err := json.Unmarshal([]byte(data), &chunkData); err != nil {
+			sendSSEError(w, flusher, err.Error())
+			return
+		}
+		summaryBuilder.WriteString(chunkData.Chunk)
+		sendSSEData(w, flusher, chunkData.Chunk)
 	}
 
 	// Save the complete summary to database
